@@ -47,4 +47,11 @@ interface JasmineOptions {
  * @param options Optional options for the execution of the Jasmine test
  */
 declare function gulpJasmine(options?: JasmineOptions): NodeJS.ReadWriteStream;
+declare namespace gulpJasmine {
+    /* This namespace declaration is needed so that we don't have to specify
+     * --esModuleInterop in order to use typings from here in typescript 2.7
+     * and later. If in the future there are any static methods or properties
+     * to the gulpJasmine function they would go in here
+     */
+}
 export = gulpJasmine;
