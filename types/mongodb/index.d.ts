@@ -614,6 +614,9 @@ export class Db extends EventEmitter {
     slaveOk: boolean;
     writeConcern: WriteConcern;
 
+    // TODO: Expand these types
+    topology: any;
+
     /** http://mongodb.github.io/node-mongodb-native/3.1/api/Db.html#addUser */
     addUser(username: string, password: string, callback: MongoCallback<any>): void;
     addUser(username: string, password: string, options?: DbAddUserOptions): Promise<any>;
@@ -858,6 +861,27 @@ export interface FSyncOptions extends CommonOptions {
 
 type OptionalId<TSchema> = Omit<TSchema, '_id'> & { _id?: any };
 
+/** Discovered by investigation and inspection */
+export interface IndexSpec {
+    key: any;
+    name: string;
+    background?: boolean; // default: false
+    unique?: boolean; // default: false
+    partialFilterExpression?: any;
+    sparse?: boolean; // default: false
+    expireAfterSeconds?: number;
+    storageEngine?: any; // value should be of type: { <storage-engine-name>: <options> }
+    weights?: any; // applies to text indexes, default: 1
+    default_language?: string; // applies to text indexes, default: english
+    language_override?: string; // applies to text indexes, default: language
+    textIndexVersion?: number; // default: 2 (MongoDB 2.6+)
+    "2dsphereIndexVersion"?: number; // default: 2 (MongoDB 2.6+)
+    bits?: number; // applicable to 2d indexes
+    min?: number; // applicable to 2d indexes
+    max?: number; // applicable to 2d indexes
+    bucketSize?: number; // applicable to geoHaystack indexes
+  }
+
 /** http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html */
 export interface Collection<TSchema = Default> {
     /**
@@ -997,9 +1021,9 @@ export interface Collection<TSchema = Default> {
     indexExists(indexes: string | string[], options?: { session: ClientSession }): Promise<boolean>;
     indexExists(indexes: string | string[], options: { session: ClientSession }, callback: MongoCallback<boolean>): void;
     /** http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#indexInformation */
-    indexInformation(callback: MongoCallback<any>): void;
-    indexInformation(options?: { full: boolean, session: ClientSession }): Promise<any>;
-    indexInformation(options: { full: boolean, session: ClientSession }, callback: MongoCallback<any>): void;
+    indexInformation(callback: MongoCallback<IndexSpec[]>): void;
+    indexInformation(options?: { full?: boolean, session?: ClientSession }): Promise<IndexSpec[]>;
+    indexInformation(options: { full?: boolean, session?: ClientSession }, callback: MongoCallback<IndexSpec[]>): void;
     /** http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#initializeOrderedBulkOp */
     initializeOrderedBulkOp(options?: CommonOptions): OrderedBulkOperation;
     /** http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#initializeUnorderedBulkOp */
